@@ -1,0 +1,44 @@
+menu a {
+    text-decoration: none;
+}
+
+li {
+    list-style: none;
+}
+
+.menu_list {
+    display: flex;
+}
+
+a {
+    text-decoration: none;
+}
+
+li {
+    list-style: none;
+}
+
+.menu_list>li{
+    margin: 0px 10px 0px 0px;
+}
+
+.menu_link {
+    color: crimson;
+}
+
+.menu li {
+    position: relative;
+}
+
+.sub_menu_list {
+    position: absolute;
+    left: 0px;
+    top: 10px;
+    color: darkmagenta;
+    display: none;
+    padding: 10px 0px 0px 0px;
+}
+
+.menu_list>li:hover .sub_menu_list{
+    display: block;
+}

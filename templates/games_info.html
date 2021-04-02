@@ -1,0 +1,52 @@
+{% extends "main.html" %}
+
+{% block content %}
+<h1>Игры</h1>
+<div class="col-md6 border rounded">
+    <h2>{{item.title}}</h2>
+    <div>
+        {{item.description}}
+    </div>
+    <img src="/static/img/{{item.picture}}" width="300px" height="200px">
+    <div>
+        Разработчик: - {{item.developer}}, Издатель - {{item.publisher}}, Дата выхода - {{item.date}}
+    </div>
+    <div>
+        Цена - {{item.price}}руб.
+    </div>
+    <div>
+        Категории:
+        {% for i in item.categories %}
+            {{i.name}}
+        {% endfor %} 
+    </div>
+    <div>        
+        {% if item.quantity > 0 %} 
+            Осталось {{item.quantity}} ключей
+        {% else %}
+            Нет в наличии
+        {% endif %}
+    </div>
+    <div>
+        {% if current_user.is_authenticated and current_user.role == 'user' and not check and item.quantity > 0 %}
+            <div>
+                <a href="/add_to_cart/{{ item.id }}" class="btn btn-warning">
+                    В корзину
+                </a>
+            </div>
+        {% elif current_user.is_authenticated and current_user.role == 'user' and check %}
+            <div>
+                <a href="/cart" class="btn btn-warning">
+                    К корзине
+                </a>
+            </div>
+        {% else %}
+            <div>
+                <a href="" class="btn btn-warning">
+                   Нельзя купить
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
