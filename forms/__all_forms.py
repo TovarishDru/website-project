@@ -31,8 +31,3 @@ class GamesForm(FlaskForm):
     price = IntegerField('Цена')
     quantity = IntegerField('Количество ключей')
     submit = SubmitField('Применить')
-
-
-class MenuForm(FlaskForm):
-    title = StringField('Название', validators=[DataRequired()])
-    submit = SubmitField('Поиск')

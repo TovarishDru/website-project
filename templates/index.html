@@ -1,11 +1,10 @@
 {% extends "main.html" %}
 
 {% block content %}
-<h1>Добро пожаловать!</h1>
 <header class='menu'>
     <ul class='menu_list'>
         <li class='menu_link'>
-            <a href=''>Жанры</a>
+            <a href=''>Каталог игр</a>
             <ul class="sub_menu_list">
                 {% for i in genres %}
                     <li class='sub_menu_link'>
@@ -15,33 +14,25 @@
             </ul>
         </li>
         <li>
-            <form action="" method="post">
-                {{ form.hidden_tag() }}
-                <p>
-                    {{ form.title.label }}<br>
-                    {{ form.title(class="form-control") }}<br>
-                    {% for error in form.title.errors %}
-                        <div class="alert alert-danger" role="alert">
-                            {{ error }}
-                        </div>
-                {% endfor %}
-                </p>
-                <p>
-                {{ form.submit(type="submit", class="btn btn-primary")}}
-                </p>
+            <form action="" method="post" class='mainmenu_form'>
+                <input type='text' name='search' placeholder="Поиск">
+                <i class="bi bi-search"></i>
             </form>
+            {{message}}
+        </li>
+        <li>
+            {% if current_user.is_authenticated %}
+                <a class="navbar-brand" href="/logout">{{ current_user.name }}</a>
+            {% else %}
+                <p>
+                    <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
+                    <a class="btn btn-success" href="/login">Войти</a>
+                </p>
+            {% endif %}
         </li>
     </ul>
 </header>
 <nav>
-    {% if current_user.is_authenticated %}
-        <a class="navbar-brand" href="/logout">{{ current_user.name }}</a>
-    {% else %}
-        <p>
-            <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
-            <a class="btn btn-success" href="/login">Войти</a>
-        </p>
-    {% endif %}
 </nav>
 <h1>Игры</h1>
 {% if not empty %}

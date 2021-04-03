@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, request, abort
 from data import db_session
 from data.__all_models import User, Product, Category
-from forms.__all_forms import RegisterForm, LoginForm, GamesForm, MenuForm
+from forms.__all_forms import RegisterForm, LoginForm, GamesForm
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import shutil
 import os
@@ -24,33 +24,49 @@ def load_user(user_id):
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
-      form = MenuForm()
       db_sess = db_session.create_session()
+      message = ''
       games = db_sess.query(Product).all()
       empty = True
       if len(games) > 0:
             empty = False
-      if form.validate_on_submit():
-            search = db_sess.query(Product).filter(Product.title == form.title.data).first()
+      if request.method == 'POST':
+            search = None
+            for game in games:
+                  if game.title.lower() == request.form['search'].lower():
+                        search = game
+                        break
             if search is not None:
                   return redirect(f'/games_info/{search.id}')
-      return render_template("index.html", games=games, empty=empty, genres=db_sess.query(Category).all(), form=form)
+            else:
+                  message = 'Ничего не найдено'
+      return render_template("index.html", games=games, empty=empty, genres=db_sess.query(Category).all(), message=message)
 
 
-@app.route('/search/<criteria>')
+@app.route('/search/<criteria>', methods=['GET', 'POST'])
 def search(criteria):
-      form = MenuForm()
+      message = ''
       db_sess = db_session.create_session()
       cat = db_sess.query(Category).filter(Category.name == criteria).first()
       games = db_sess.query(Product).all()
       res = []
-      for i in games:
-            if cat in i.categories:
-                  res.append(i)
+      for game in games:
+            if cat in game.categories:
+                  res.append(game)
       empty = False
       if len(res) == 0:
             empty = True
-      return render_template('index.html', games=res, empty=empty, genres=db_sess.query(Category).all(), form=form)
+      if request.method == 'POST':
+            search = None
+            for game in games:
+                  if game.title.lower() == request.form['search'].lower():
+                        search = game
+                        break
+            if search is not None:
+                  return redirect(f'/games_info/{search.id}')
+            else:
+                  message = 'Ничего не найдено'
+      return render_template('index.html', games=res, empty=empty, genres=db_sess.query(Category).all(), message=message)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -200,9 +216,10 @@ def games_info(id):
       if not games:
             abort(404)
       check = False
-      for i in current_user.cart:
-            if i.id == id:
-                  check = True
+      if current_user.is_authenticated:
+            for i in current_user.cart:
+                  if i.id == id:
+                        check = True
       return render_template('games_info.html', item=games, check=check)
 
 
