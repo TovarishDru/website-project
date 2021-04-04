@@ -3,9 +3,10 @@ from .db_session import SqlAlchemyBase
 from sqlalchemy import orm
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from sqlalchemy_serializer import SerializerMixin
 
 
-class User(SqlAlchemyBase, UserMixin):
+class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'users'
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     name = sqlalchemy.Column(sqlalchemy.String)
@@ -13,19 +14,17 @@ class User(SqlAlchemyBase, UserMixin):
     role = sqlalchemy.Column(sqlalchemy.String)
     hashed_password = sqlalchemy.Column(sqlalchemy.String)
     cart = orm.relation("Product",
-                secondary="order",
-                backref="users")
-
+                        secondary="order",
+                        backref="users")
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)
-
 
     def check_password(self, password):
         return check_password_hash(self.hashed_password, password)
 
 
-class Product(SqlAlchemyBase):
+class Product(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'products'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
@@ -38,25 +37,25 @@ class Product(SqlAlchemyBase):
     price = sqlalchemy.Column(sqlalchemy.Integer)
     quantity = sqlalchemy.Column(sqlalchemy.Integer)
     categories = orm.relation("Category",
-                        secondary="association",
-                        backref="products")
+                              secondary="association",
+                              backref="products")
     association_table = sqlalchemy.Table('order', SqlAlchemyBase.metadata,
-        sqlalchemy.Column('users', sqlalchemy.Integer,
-                        sqlalchemy.ForeignKey('users.id')),
-        sqlalchemy.Column('products', sqlalchemy.Integer,
-                        sqlalchemy.ForeignKey('products.id'))
-    )
+                                         sqlalchemy.Column('users', sqlalchemy.Integer,
+                                                           sqlalchemy.ForeignKey('users.id')),
+                                         sqlalchemy.Column('products', sqlalchemy.Integer,
+                                                           sqlalchemy.ForeignKey('products.id'))
+                                         )
 
 
 class Category(SqlAlchemyBase):
     __tablename__ = 'category'
 
-    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, 
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True,
                            autoincrement=True)
     name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     association_table = sqlalchemy.Table('association', SqlAlchemyBase.metadata,
-        sqlalchemy.Column('products', sqlalchemy.Integer,
-                        sqlalchemy.ForeignKey('products.id')),
-        sqlalchemy.Column('category', sqlalchemy.Integer,
-                        sqlalchemy.ForeignKey('category.id'))
-    )
+                                         sqlalchemy.Column('products', sqlalchemy.Integer,
+                                                           sqlalchemy.ForeignKey('products.id')),
+                                         sqlalchemy.Column('category', sqlalchemy.Integer,
+                                                           sqlalchemy.ForeignKey('category.id'))
+                                         )
