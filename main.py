@@ -9,6 +9,7 @@ from resources import user_resource, product_resource
 from flask_restful import reqparse, abort, Api, Resource
 from requests import get, post, delete, put
 
+
 db_session.global_init("db/shop.db")
 app = Flask(__name__)
 api = Api(app)
@@ -33,6 +34,16 @@ def main():
     empty = True
     if len(games) > 0:
         empty = False
+    if not empty:
+        pr = []
+        res = []
+        for i in games:
+            pr.append(i)
+            if len(pr) == 4:
+                res.append(pr)
+                pr = []
+        if len(pr) != 0:
+            res.append(pr)
     if request.method == 'POST':
         search = None
         for game in games:
@@ -43,7 +54,7 @@ def main():
             return redirect(f'/games_info/{search.id}')
         else:
             message = 'Ничего не найдено'
-    return render_template("index.html", games=games, empty=empty, genres=db_sess.query(Category).all(),
+    return render_template("index.html", games=res, empty=empty, genres=db_sess.query(Category).all(),
                            message=message)
 
 
@@ -121,7 +132,7 @@ def add_games():
     form = GamesForm()
     if form.validate_on_submit():
         res = post('http://127.0.0.1:8080/api/product',
-                   json={'title': form.title.data, 'description': form.description.data, 'picture': form.picture.data.filename,
+                    json={'title': form.title.data, 'description': form.description.data, 'picture': form.picture.data.filename,
                          'developer': form.developer.data, 'publisher': form.publisher.data, 'date': form.date.data,
                          'price': form.price.data, 'quantity': form.quantity.data, 'genres': form.genres.data
                          })

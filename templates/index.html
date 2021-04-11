@@ -3,8 +3,13 @@
 {% block content %}
 <header class='menu'>
     <ul class='menu_list'>
-        <li class='menu_link'>
-            <a href=''>Каталог игр</a>
+        <li>
+            <a href='/'><img src='/static/icons/main.png'></a>
+        </li>
+        <li>
+            <div>
+                Каталог игр
+            </div>
             <ul class="sub_menu_list">
                 {% for i in genres %}
                     <li class='sub_menu_link'>
@@ -14,8 +19,8 @@
             </ul>
         </li>
         <li>
-            <form action="" method="post" class='mainmenu_form'>
-                <input type='text' name='search' placeholder="Поиск">
+            <form action="" method="post" class='search_box'>
+                <input type='text' name='search' class='search_txt'>
                 <i class="bi bi-search"></i>
             </form>
             {{message}}
@@ -24,68 +29,58 @@
             {% if current_user.is_authenticated %}
                 <a class="navbar-brand" href="/logout">{{ current_user.name }}</a>
             {% else %}
-                <p>
-                    <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
-                    <a class="btn btn-success" href="/login">Войти</a>
-                </p>
+                <a href='#'>Войти</a>
+                <ul class="sub_menu_list">
+                    <li>
+                        <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
+                    </li>
+                    <li>
+                        <a class="btn btn-success" href="/login">Войти</a>
+                    </li>
+                </ul>
+            {% endif %}
+        </li>
+        <li>
+            {% if current_user.is_authenticated and current_user.role == 'admin' %}
+            <a href='/games'><img src="/static/icons/add.png" class='nav_ic'></a>
+            {% elif current_user.is_authenticated and current_user.role == 'user' %}
+                <a href='/cart'><img src="/static/icons/cart.png" class='nav_ic'></a>
             {% endif %}
         </li>
     </ul>
 </header>
-<nav>
-</nav>
-<h1>Игры</h1>
+<h1 align='center'>Игры</h1>
 {% if not empty %}
-    {% for item in games%}
-    <div class="col-md6 border rounded">
-        <h2>{{item.title}}</h2>
-        <div>
-            {{item.description}}
+    <div class='container'>
+    {% for i in games %}  
+        <div class='row'>
+        {% for item in i %}
+            <div class='col col-xl-3 col-lg-4 col-md-6' id='game_block'>
+                <img src="/static/img/{{item.picture}}" class='game_image'>
+                <div>
+                    {{item.title}}
+                </div>
+                <div>
+                    {{item.price}}руб.
+                </div>
+                <div>        
+                    {% if item.quantity > 0 %} 
+                        Осталось {{item.quantity}} ключей
+                    {% else %}
+                        Нет в наличии
+                    {% endif %}
+                </div>
+                <div>
+                    <a href="/games_info/{{ item.id }}" class="btn btn-warning">
+                        Подробнее
+                    </a>
+                </div>
+            </div> 
+        {% endfor %}
         </div>
-        <img src="/static/img/{{item.picture}}" width="300px" height="200px">
-        <div>
-            Разработчик: - {{item.developer}}, Издатель - {{item.publisher}}, Дата выхода - {{item.date}}
-        </div>
-        <div>
-            Цена - {{item.price}}руб.
-        </div>
-        <div>
-            Категории:
-            {% for i in item.categories %}
-                {{i.name}}
-            {% endfor %} 
-        </div>
-        <div>        
-            {% if item.quantity > 0 %} 
-                Осталось {{item.quantity}} ключей
-            {% else %}
-                Нет в наличии
-            {% endif %}
-        </div>
-        {% if current_user.is_authenticated and current_user.role == 'admin' %}
-        <div>
-            <a href="/games_edit/{{ item.id }}" class="btn btn-warning">
-                Изменить
-            </a>
-            <a href="/games_delete/{{ item.id }}" class="btn btn-danger">
-                Удалить
-            </a>
-        </div>
-        {% elif current_user.is_authenticated and current_user.role == 'user' %}
-        <div>
-            <a href="/games_info/{{ item.id }}" class="btn btn-warning">
-                Подробнее
-            </a>
-        </div>
-        {% endif %}
-    </div>
     {% endfor %}
+    </div>
 {% else %}
     Пока нет игр
-{% endif %}
-{% if current_user.is_authenticated and current_user.role == 'admin' %}
-    <a href="/games" class="btn btn-secondary">Добавить игру</a>
-{% elif current_user.is_authenticated and current_user.role == 'user' %}
-    <a href="/cart" class="btn btn-secondary">Корзина</a>
 {% endif %}
 {% endblock %}

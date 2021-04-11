@@ -16,9 +16,6 @@ li {
 .menu_list>li{
     margin: 0px 10px 0px 0px;
 }
-.menu_link {
-    color: crimson;
-}
 .menu li {
     position: relative;
 }
@@ -36,4 +33,41 @@ li {
     position: sticky;
     top: 0px;
     left: 0px;
+}
+.nav_ic {
+    width: 40px;
+    height: 40px;
+}
+.search_box {
+    background-color: rgb(128, 128, 128);
+    border-radius: 20px;
+    display: flex;
+    height: 40px;
+    border-radius: 20px;
+    padding: 10px;
+    color: white;
+}
+.search_btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.search_txt {
+    border: none;
+    outline: none;
+    padding: 0px;
+    font-size: 16px;
+    background-color: rgb(128, 128, 128); 
+    color: white;
+}
+#game_block {
+    position: relative;
+    height: 450px;
+    margin-top: 10px;
+}
+.game_image {
+    object-fit: cover;
+    width: 100%;
+    height: 300px;
+    border-radius: 20px;
 }

@@ -40,9 +40,18 @@
                     К корзине
                 </a>
             </div>
+        {% elif current_user.is_authenticated and current_user.role == 'admin' %}
+        <div>
+            <a href="/games_edit/{{ item.id }}" class="btn btn-warning">
+                Изменить
+            </a>
+            <a href="/games_delete/{{ item.id }}" class="btn btn-danger">
+                Удалить
+            </a>
+        </div>
         {% else %}
             <div>
-                <a href="" class="btn btn-warning">
+                <a href="#" class="btn btn-secondary btn-lg disabled" tabindex="-1" role="button" aria-disabled="true">
                    Нельзя купить
                 </a>
             </div>
