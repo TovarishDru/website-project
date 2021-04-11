@@ -1,0 +1,18 @@
+{% extends "main.html" %}
+
+{% block content %}
+<h1>Новости</h1>
+<div class="col-md6 border rounded">
+    <h2 align="center">{{item.title}}</h2>
+    <div align="center">
+        <img src="/static/img/{{item.picture}}" width="600px" height="400px">
+    </div>
+    <p style="text-indent: 25px; margin-left: 20px; margin-right: 30px; margin-top: 20px; text-align: justify;">
+        {{item.content}}
+    </p>
+    <p style="margin-left: 20px;">
+        Автор: {{item.user.name}}
+    </p>
+
+</div>
+{% endblock %}

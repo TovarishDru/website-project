@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, request, abort
 from data import db_session
-from data.__all_models import User, Product, Category
+from data.__all_models import User, Product, Category, News
 from forms.__all_forms import RegisterForm, LoginForm, GamesForm
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import shutil
@@ -44,6 +44,22 @@ def main():
                 pr = []
         if len(pr) != 0:
             res.append(pr)
+
+    news = db_sess.query(News).filter(News.is_published).all()
+    empty2 = True
+    if len(news) > 0:
+        empty2 = False
+    if not empty2:
+        pr = []
+        res2 = []
+        for i in news:
+            pr.append(i)
+            if len(pr) == 2:
+                res2.append(pr)
+                pr = []
+        if len(pr) != 0:
+            res2.append(pr)
+
     if request.method == 'POST':
         search = None
         for game in games:
@@ -55,7 +71,7 @@ def main():
         else:
             message = 'Ничего не найдено'
     return render_template("index.html", games=res, empty=empty, genres=db_sess.query(Category).all(),
-                           message=message)
+                           message=message, empty2=empty2, news=res2)
 
 
 @app.route('/search/<criteria>', methods=['GET', 'POST'])
@@ -81,7 +97,7 @@ def search(criteria):
             return redirect(f'/games_info/{search.id}')
         else:
             message = 'Ничего не найдено'
-    return render_template('index.html', games=res, empty=empty, genres=db_sess.query(Category).all(), message=message)
+    return render_template('index.html', games=res, empty=empty, genres=db_sess.query(Category).all(), message=message,)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -250,10 +266,27 @@ def order():
     return redirect('/')
 
 
+@app.route('/news_info/<int:id>')
+def news_info(id):
+    db_sess = db_session.create_session()
+    news = db_sess.query(News).filter(News.id == id).first()
+    if not news:
+        abort(404)
+    return render_template('news_info.html', item=news)
+
+
 if __name__ == '__main__':
     api.add_resource(user_resource.UserListResource, '/api/user')
     api.add_resource(user_resource.UserResource, '/api/user/<int:product_id>')
     api.add_resource(product_resource.ProductListResource, '/api/product')
     api.add_resource(product_resource.ProductResource, '/api/product/<int:product_id>')
+
+    """
+    db_sess = db_session.create_session()
+    news = News(title="Новость_1", content="Контент\nКонтент",
+                user_id=1, picture='img_3.jpg', is_published=True)
+    db_sess.add(news)
+    db_sess.commit()
+    """
 
     app.run(port=8080, host='127.0.0.1', debug=True)

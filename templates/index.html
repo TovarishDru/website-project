@@ -57,9 +57,9 @@
         {% for item in i %}
             <div class='col col-xl-3 col-lg-4 col-md-6' id='game_block'>
                 <img src="/static/img/{{item.picture}}" class='game_image'>
-                <div>
+                <h4 align="center">
                     {{item.title}}
-                </div>
+                </h4>
                 <div>
                     {{item.price}}руб.
                 </div>
@@ -70,7 +70,7 @@
                         Нет в наличии
                     {% endif %}
                 </div>
-                <div>
+                <div align="center">
                     <a href="/games_info/{{ item.id }}" class="btn btn-warning">
                         Подробнее
                     </a>
@@ -83,4 +83,38 @@
 {% else %}
     Пока нет игр
 {% endif %}
+<div></div>
+<h1 align='center' style="margin-top: 60px;">Новости</h1>
+{% if not empty2 %}
+    <div class='container'>
+    {% for i in news %}
+        <div class='row' style="margin-top: 30px; margin-bottom: 10px;">
+
+        {% for item in i %}
+            <div class='col col-md-6'>
+                <img src="/static/img/{{item.picture}}" class='game_image'>
+                <h4 align="center">
+                    {{item.title}}
+                </h4>
+                <div>
+                    Опубликовано {{item.published_date.strftime('%d.%m.%Y')}}
+                </div>
+                <div></div>
+                <div class="text-truncate d-block">
+                    {{item.content[:80]}}
+                </div>
+                <div align="center">
+                    <a href="/news_info/{{ item.id }}" class="btn btn-warning">
+                        Читать дальше
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    {% endfor %}
+    </div>
+{% else %}
+    Пока нет игр
+{% endif %}
+
 {% endblock %}

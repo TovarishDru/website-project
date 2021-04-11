@@ -4,6 +4,7 @@ from sqlalchemy import orm
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from sqlalchemy_serializer import SerializerMixin
+import datetime
 
 
 class User(SqlAlchemyBase, UserMixin, SerializerMixin):
@@ -45,6 +46,23 @@ class Product(SqlAlchemyBase, SerializerMixin):
                                          sqlalchemy.Column('products', sqlalchemy.Integer,
                                                            sqlalchemy.ForeignKey('products.id'))
                                          )
+
+
+class News(SqlAlchemyBase, SerializerMixin):
+    __tablename__ = 'news'
+
+    id = sqlalchemy.Column(sqlalchemy.Integer,
+                           primary_key=True, autoincrement=True)
+    title = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    content = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    picture = sqlalchemy.Column(sqlalchemy.String)
+    published_date = sqlalchemy.Column(sqlalchemy.DateTime,
+                                     default=datetime.datetime.now)
+    is_published = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
+
+    user_id = sqlalchemy.Column(sqlalchemy.Integer,
+                                sqlalchemy.ForeignKey("users.id"))
+    user = orm.relation('User')
 
 
 class Category(SqlAlchemyBase):
