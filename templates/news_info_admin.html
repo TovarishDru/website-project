@@ -14,13 +14,16 @@
         Автор: {{item.user.name}}
     </p>
 
-    {% if current_user.is_authenticated and current_user.role == 'admin' %}
-        <div>
-            <a href="/news_delete/{{ item.id }}" class="btn btn-danger">
-                Удалить
-            </a>
-        </div>
-    {% endif %}
+    <div>
+        <a href="/news_accept/{{ item.id }}" class="btn btn-warning">
+            Принять
+        </a>
+    </div>
+    <div>
+        <a href="/news_reject/{{ item.id }}" class="btn btn-danger">
+            Отклонить
+        </a>
+    </div>
 
 </div>
 {% endblock %}

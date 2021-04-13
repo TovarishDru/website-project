@@ -42,9 +42,12 @@
         </li>
         <li>
             {% if current_user.is_authenticated and current_user.role == 'admin' %}
-            <a href='/games'><img src="/static/icons/add.png" class='nav_ic'></a>
+            <a href='/games'><img src="/static/icons/add.png" class='nav_ic' title="Добавить игру"></a>
+            <a href='/news'><img src="/static/icons/add.png" class='nav_ic' title="Добавить новость"></a>
+            <a href='/news_list'><img src="/static/icons/add.png" class='nav_ic' title="Просмотреть предложенные новости"></a>
             {% elif current_user.is_authenticated and current_user.role == 'user' %}
-                <a href='/cart'><img src="/static/icons/cart.png" class='nav_ic'></a>
+                <a href='/cart'><img src="/static/icons/cart.png" class='nav_ic' title="Перейти к корзине"></a>
+                <a href='/news'><img src="/static/icons/add.png" class='nav_ic' title="Добавить новость"></a>
             {% endif %}
         </li>
     </ul>
@@ -114,7 +117,7 @@
     {% endfor %}
     </div>
 {% else %}
-    Пока нет игр
+    Пока нет новостей
 {% endif %}
 
 {% endblock %}

@@ -31,3 +31,10 @@ class GamesForm(FlaskForm):
     price = IntegerField('Цена')
     quantity = IntegerField('Количество ключей')
     submit = SubmitField('Применить')
+
+
+class NewsForm(FlaskForm):
+    title = StringField('Название', validators=[DataRequired()])
+    content = TextAreaField("Контент")
+    picture = FileField('Изображение', validators=[FileRequired()])
+    submit = SubmitField('Добавить')

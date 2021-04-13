@@ -1,14 +1,13 @@
 from flask import Flask, render_template, redirect, request, abort
 from data import db_session
 from data.__all_models import User, Product, Category, News
-from forms.__all_forms import RegisterForm, LoginForm, GamesForm
+from forms.__all_forms import RegisterForm, LoginForm, GamesForm, NewsForm
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import shutil
 import os
 from resources import user_resource, product_resource
 from flask_restful import reqparse, abort, Api, Resource
 from requests import get, post, delete, put
-
 
 db_session.global_init("db/shop.db")
 app = Flask(__name__)
@@ -97,7 +96,8 @@ def search(criteria):
             return redirect(f'/games_info/{search.id}')
         else:
             message = 'Ничего не найдено'
-    return render_template('index.html', games=res, empty=empty, genres=db_sess.query(Category).all(), message=message,)
+    return render_template('index.html', games=res, empty=empty, genres=db_sess.query(Category).all(),
+                           message=message, )
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -148,7 +148,8 @@ def add_games():
     form = GamesForm()
     if form.validate_on_submit():
         res = post('http://127.0.0.1:8080/api/product',
-                    json={'title': form.title.data, 'description': form.description.data, 'picture': form.picture.data.filename,
+                   json={'title': form.title.data, 'description': form.description.data,
+                         'picture': form.picture.data.filename,
                          'developer': form.developer.data, 'publisher': form.publisher.data, 'date': form.date.data,
                          'price': form.price.data, 'quantity': form.quantity.data, 'genres': form.genres.data
                          })
@@ -181,10 +182,11 @@ def edit_games(id):
             abort(404)
     if form.validate_on_submit():
         res = put(f'http://127.0.0.1:8080/api/product/{id}',
-                   json={'title': form.title.data, 'description': form.description.data, 'picture': form.picture.data.filename,
-                         'developer': form.developer.data, 'publisher': form.publisher.data, 'date': form.date.data,
-                         'price': form.price.data, 'quantity': form.quantity.data, 'genres': form.genres.data
-                         })
+                  json={'title': form.title.data, 'description': form.description.data,
+                        'picture': form.picture.data.filename,
+                        'developer': form.developer.data, 'publisher': form.publisher.data, 'date': form.date.data,
+                        'price': form.price.data, 'quantity': form.quantity.data, 'genres': form.genres.data
+                        })
         if res:
             out = open(f'{form.picture.data.filename}', "wb")
             out.write(form.picture.data.read())
@@ -273,6 +275,107 @@ def news_info(id):
     if not news:
         abort(404)
     return render_template('news_info.html', item=news)
+
+
+@app.route('/news', methods=['GET', 'POST'])
+@login_required
+def add_news():
+    is_published = True
+    if not current_user.is_authenticated:
+        abort(404)
+    if current_user.role == 'user':
+        is_published = False
+    form = NewsForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        news = News(title=form.title.data, content=form.content.data,
+                    user_id=1, picture=form.picture.data.filename, is_published=is_published)
+        db_sess.add(news)
+        db_sess.commit()
+        out = open(f'{form.picture.data.filename}', "wb")
+        out.write(form.picture.data.read())
+        out.close()
+        shutil.move(f'{form.picture.data.filename}', f'static/img/{form.picture.data.filename}')
+        return redirect('/')
+    return render_template('news.html', form=form)
+
+
+@app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def news_delete(id):
+    session = db_session.create_session()
+    news = session.query(News).get(id)
+    if not news:
+        abort(404, message=f"News {id} not found")
+    news = session.query(News).get(id)
+    os.remove(f'static/img/{news.picture}')
+    session.delete(news)
+    session.commit()
+    return redirect('/')
+
+
+@app.route('/news_list', methods=['GET', 'POST'])
+@login_required
+def news_list():
+    if not current_user.is_authenticated or not current_user.role == 'admin':
+        abort(404)
+    session = db_session.create_session()
+    news = session.query(News).filter(News.is_published == 0).all()
+    res = []
+    if len(news) > 0:
+        pr = []
+        res = []
+        for i in news:
+            pr.append(i)
+            if len(pr) == 2:
+                res.append(pr)
+                pr = []
+        if len(pr) != 0:
+            res.append(pr)
+    return render_template('news_list.html', news=res)
+
+
+@app.route('/news_info_admin/<int:id>')
+@login_required
+def news_info_admin(id):
+    if not current_user.is_authenticated or not current_user.role == 'admin':
+        abort(404)
+    db_sess = db_session.create_session()
+    news = db_sess.query(News).filter(News.id == id).first()
+    if not news or news.is_published:
+        abort(404)
+    if not news:
+        abort(404)
+    return render_template('news_info_admin.html', item=news)
+
+
+@app.route('/news_accept/<int:id>')
+@login_required
+def news_accept(id):
+    if not current_user.is_authenticated or not current_user.role == 'admin':
+        abort(404)
+    db_sess = db_session.create_session()
+    news = db_sess.query(News).filter(News.id == id).first()
+    if not news:
+        abort(404)
+    news.is_published = True
+    db_sess.commit()
+    return redirect('/news_list')
+
+
+@app.route('/news_reject/<int:id>')
+@login_required
+def news_reject(id):
+    if not current_user.is_authenticated or not current_user.role == 'admin':
+        abort(404)
+    session = db_session.create_session()
+    news = session.query(News).get(id)
+    if not news:
+        abort(404)
+    os.remove(f'static/img/{news.picture}')
+    session.delete(news)
+    session.commit()
+    return redirect('/news_list')
 
 
 if __name__ == '__main__':

@@ -1,0 +1,37 @@
+{% extends "main.html" %}
+
+{% block content %}
+<h1 align='center' style="margin-top: 60px;">Предложенные новости</h1>
+{% if news|length() > 0 %}
+    <div class='container'>
+    {% for i in news %}
+        <div class='row' style="margin-top: 30px; margin-bottom: 10px;">
+
+        {% for item in i %}
+            <div class='col col-md-6'>
+                <img src="/static/img/{{item.picture}}" class='game_image'>
+                <h4 align="center">
+                    {{item.title}}
+                </h4>
+                <div>
+                    Опубликовано {{item.published_date.strftime('%d.%m.%Y')}}
+                </div>
+                <div></div>
+                <div class="text-truncate d-block">
+                    {{item.content[:80]}}
+                </div>
+                <div align="center">
+                    <a href="/news_info_admin/{{ item.id }}" class="btn btn-warning">
+                        Читать дальше
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    {% endfor %}
+    </div>
+{% else %}
+    Пока нет предложенных новостей
+{% endif %}
+
+{% endblock %}
