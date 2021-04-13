@@ -13,10 +13,37 @@ db_session.global_init("db/shop.db")
 app = Flask(__name__)
 api = Api(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 db_sess = db_session.create_session()
 login_manager = LoginManager()
 login_manager.init_app(app)
 db_session.expire_on_commit = False
+
+
+@app.after_request
+def add_header(r):
+    """
+    Add headers to both force latest IE rendering engine or Chrome Frame,
+    and also to cache the rendered page for 10 minutes.
+    """
+    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    r.headers["Pragma"] = "no-cache"
+    r.headers["Expires"] = "0"
+    r.headers['Cache-Control'] = 'public, max-age=0'
+    return r
+
+
+def generate_img_name(type, file):
+    if '.' in file:
+        ext = file.split('.')[-1]
+    else:
+        ext = 'png'
+    files = os.listdir('static/img')
+    files = list(filter(lambda x: x.startswith(type), files))
+    files = list(map(lambda x: int(x.split('.')[0][len(type) + 1:]), files))
+    ind = max(files) + 1
+    filename = f'{type}_{ind}.{ext}'
+    return filename
 
 
 @login_manager.user_loader
@@ -147,16 +174,17 @@ def logout():
 def add_games():
     form = GamesForm()
     if form.validate_on_submit():
+        filename = generate_img_name('products', form.picture.data.filename)
         res = post('http://127.0.0.1:8080/api/product',
                    json={'title': form.title.data, 'description': form.description.data,
-                         'picture': form.picture.data.filename,
+                         'picture': filename,
                          'developer': form.developer.data, 'publisher': form.publisher.data, 'date': form.date.data,
                          'price': form.price.data, 'quantity': form.quantity.data, 'genres': form.genres.data
                          })
-        out = open(f'{form.picture.data.filename}', "wb")
+        out = open(f'{filename}', "wb")
         out.write(form.picture.data.read())
         out.close()
-        shutil.move(f'{form.picture.data.filename}', f'static/img/{form.picture.data.filename}')
+        shutil.move(f'{filename}', f'static/img/{filename}')
         return redirect('/')
     return render_template('games.html', form=form)
 
@@ -167,6 +195,7 @@ def edit_games(id):
     form = GamesForm()
     if request.method == "GET":
         res = get(f'http://127.0.0.1:8080/api/product/{id}')
+        print(res)
         if res:
             res = res.json()['product']
             form.title.data = res['title']
@@ -181,17 +210,20 @@ def edit_games(id):
         else:
             abort(404)
     if form.validate_on_submit():
+        res = get(f'http://127.0.0.1:8080/api/product/{id}').json()['product']
+        os.remove(f"static/img/{res['picture']}")
+        filename = generate_img_name('products', form.picture.data.filename)
         res = put(f'http://127.0.0.1:8080/api/product/{id}',
                   json={'title': form.title.data, 'description': form.description.data,
-                        'picture': form.picture.data.filename,
+                        'picture': filename,
                         'developer': form.developer.data, 'publisher': form.publisher.data, 'date': form.date.data,
                         'price': form.price.data, 'quantity': form.quantity.data, 'genres': form.genres.data
                         })
         if res:
-            out = open(f'{form.picture.data.filename}', "wb")
+            out = open(f'{filename}', "wb")
             out.write(form.picture.data.read())
             out.close()
-            shutil.move(f'{form.picture.data.filename}', f'static/img/{form.picture.data.filename}')
+            shutil.move(f'{filename}', f'static/img/{filename}')
             return redirect('/')
         else:
             abort(404)
@@ -287,15 +319,16 @@ def add_news():
         is_published = False
     form = NewsForm()
     if form.validate_on_submit():
+        filename = generate_img_name('news', form.picture.data.filename)
         db_sess = db_session.create_session()
         news = News(title=form.title.data, content=form.content.data,
-                    user_id=1, picture=form.picture.data.filename, is_published=is_published)
+                    user_id=current_user.id, picture=filename, is_published=is_published)
         db_sess.add(news)
         db_sess.commit()
-        out = open(f'{form.picture.data.filename}', "wb")
+        out = open(f'{filename}', "wb")
         out.write(form.picture.data.read())
         out.close()
-        shutil.move(f'{form.picture.data.filename}', f'static/img/{form.picture.data.filename}')
+        shutil.move(f'{filename}', f'static/img/{filename}')
         return redirect('/')
     return render_template('news.html', form=form)
 
