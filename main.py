@@ -113,6 +113,16 @@ def search(criteria):
     empty = False
     if len(res) == 0:
         empty = True
+    if not empty:
+        pr = []
+        games = []
+        for i in games:
+            pr.append(i)
+            if len(pr) == 4:
+                games.append(pr)
+                pr = []
+        if len(pr) != 0:
+            games.append(pr)
     if request.method == 'POST':
         search = None
         for game in games:
