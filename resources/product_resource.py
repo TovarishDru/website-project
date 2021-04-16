@@ -32,7 +32,10 @@ class ProductResource(Resource):
         abort_if_product_not_found(product_id)
         session = db_session.create_session()
         product = session.query(Product).get(product_id)
-        os.remove(f'static/img/{product.picture}')
+        try:
+            os.remove(f'static/img/{product.picture}')
+        except Exception:
+            pass
         session.delete(product)
         session.commit()
         return jsonify({'success': 'OK'})

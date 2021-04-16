@@ -6,6 +6,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 import shutil
 import os
 from resources import user_resource, product_resource
+from resources.product_search import product_search
 from flask_restful import reqparse, abort, Api, Resource
 from requests import get, post, delete, put
 
@@ -40,8 +41,11 @@ def generate_img_name(type, file):
         ext = 'png'
     files = os.listdir('static/img')
     files = list(filter(lambda x: x.startswith(type), files))
-    files = list(map(lambda x: int(x.split('.')[0][len(type) + 1:]), files))
-    ind = max(files) + 1
+    if files:
+        files = list(map(lambda x: int(x.split('.')[0][len(type) + 1:]), files))
+        ind = max(files) + 1
+    else:
+        ind = 1
     filename = f'{type}_{ind}.{ext}'
     return filename
 
@@ -87,22 +91,34 @@ def main():
             res2.append(pr)
 
     if request.method == 'POST':
-        search = None
-        for game in games:
-            if game.title.lower() == request.form['search'].lower():
-                search = game
-                break
-        if search is not None:
-            return redirect(f'/games_info/{search.id}')
-        else:
-            message = 'Ничего не найдено'
+        return redirect(f"/search/request={request.form['search'].lower()}")
     return render_template("index.html", games=res, empty=empty, genres=db_sess.query(Category).all(),
                            message=message, empty2=empty2, news=res2)
 
 
-@app.route('/search/<criteria>', methods=['GET', 'POST'])
-def search(criteria):
-    message = ''
+@app.route('/search/request=<search_request>', methods=['GET', 'POST'])
+def search_games(search_request):
+    if request.method == 'POST':
+        return redirect(f"/search/request={request.form['search'].lower()}")
+    res = product_search(search_request)
+    session = db_session.create_session()
+    games = []
+    for id in res:
+        games.append(session.query(Product).get(id))
+    pr = []
+    res = []
+    for i in games:
+        pr.append(i)
+        if len(pr) == 4:
+            res.append(pr)
+            pr = []
+    if len(pr) != 0:
+        res.append(pr)
+    return render_template('search_games.html', games=res, request=search_request, empty=not bool(res))
+
+
+@app.route('/search/category=<criteria>', methods=['GET', 'POST'])
+def search_category(criteria):
     db_sess = db_session.create_session()
     cat = db_sess.query(Category).filter(Category.name == criteria).first()
     games = db_sess.query(Product).all()
@@ -110,31 +126,18 @@ def search(criteria):
     for game in games:
         if cat in game.categories:
             res.append(game)
-    empty = False
-    if len(res) == 0:
-        empty = True
-    if not empty:
-        pr = []
-        games = []
-        for i in games:
-            pr.append(i)
-            if len(pr) == 4:
-                games.append(pr)
-                pr = []
-        if len(pr) != 0:
-            games.append(pr)
-    if request.method == 'POST':
-        search = None
-        for game in games:
-            if game.title.lower() == request.form['search'].lower():
-                search = game
-                break
-        if search is not None:
-            return redirect(f'/games_info/{search.id}')
-        else:
-            message = 'Ничего не найдено'
-    return render_template('index.html', games=res, empty=empty, genres=db_sess.query(Category).all(),
-                           message=message, )
+    games = res[:]
+    pr = []
+    res = []
+    for i in games:
+        pr.append(i)
+        if len(pr) == 4:
+            res.append(pr)
+            pr = []
+    if len(pr) != 0:
+        res.append(pr)
+    print(res)
+    return render_template('search_category.html', games=res, empty=not bool(games), category=criteria)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -196,7 +199,7 @@ def add_games():
         out.close()
         shutil.move(f'{filename}', f'static/img/{filename}')
         return redirect('/')
-    return render_template('games.html', form=form)
+    return render_template('games.html', form=form, title='Добавление игры')
 
 
 @app.route('/games_edit/<int:id>', methods=['GET', 'POST'])
@@ -221,7 +224,10 @@ def edit_games(id):
             abort(404)
     if form.validate_on_submit():
         res = get(f'http://127.0.0.1:8080/api/product/{id}').json()['product']
-        os.remove(f"static/img/{res['picture']}")
+        try:
+            os.remove(f"static/img/{res['picture']}")
+        except Exception:
+            pass
         filename = generate_img_name('products', form.picture.data.filename)
         res = put(f'http://127.0.0.1:8080/api/product/{id}',
                   json={'title': form.title.data, 'description': form.description.data,
@@ -237,7 +243,7 @@ def edit_games(id):
             return redirect('/')
         else:
             abort(404)
-    return render_template('games.html', form=form)
+    return render_template('games.html', form=form, title='Редактирование игры')
 
 
 @app.route('/games_delete/<int:id>', methods=['GET', 'POST'])
@@ -340,7 +346,45 @@ def add_news():
         out.close()
         shutil.move(f'{filename}', f'static/img/{filename}')
         return redirect('/')
-    return render_template('news.html', form=form)
+    return render_template('news.html', form=form, title='Добавление новсти')
+
+
+@app.route('/news_edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_news(id):
+    if not current_user.is_authenticated:
+        abort(404)
+    if current_user.role != 'admin':
+        abort(404)
+    form = NewsForm()
+    if request.method == "GET":
+        session = db_session.create_session()
+        news = session.query(News).get(id)
+        if not news:
+            abort(404)
+        form.title.data = news.title
+        form.content.data = news.content
+        form.picture.data = news.picture
+    if form.validate_on_submit():
+        session = db_session.create_session()
+        news = session.query(News).get(id)
+        if not news:
+            abort(404)
+        news.title = form.title.data
+        news.content = form.content.data
+        try:
+            os.remove(f"static/img/{news.picture}")
+        except Exception:
+            pass
+        filename = generate_img_name('news', form.picture.data.filename)
+        news.picture = filename
+        out = open(f'{filename}', "wb")
+        out.write(form.picture.data.read())
+        out.close()
+        shutil.move(f'{filename}', f'static/img/{filename}')
+        session.commit()
+        return redirect('/')
+    return render_template('news.html', form=form, title='Редактирование новости')
 
 
 @app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
@@ -351,7 +395,10 @@ def news_delete(id):
     if not news:
         abort(404, message=f"News {id} not found")
     news = session.query(News).get(id)
-    os.remove(f'static/img/{news.picture}')
+    try:
+        os.remove(f'static/img/{news.picture}')
+    except Exception:
+        pass
     session.delete(news)
     session.commit()
     return redirect('/')

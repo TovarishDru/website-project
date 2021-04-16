@@ -37,4 +37,4 @@ class NewsForm(FlaskForm):
     title = StringField('Название', validators=[DataRequired()])
     content = TextAreaField("Контент")
     picture = FileField('Изображение', validators=[FileRequired()])
-    submit = SubmitField('Добавить')
+    submit = SubmitField('Применить')

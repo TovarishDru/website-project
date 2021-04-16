@@ -17,7 +17,7 @@
                         <br>
                         {% for i in genres %}
                             <li class='sub_menu_link'>
-                                <a href='/search/category={{ i.name }}'>{{i.name}}</a>
+                                <a href='/search/{{ i.name }}'>{{i.name}}</a>
                             </li>
                         {% endfor %}
                     </ul>
@@ -57,80 +57,34 @@
             </ul>
             </div>
         </header>
-        <div class="container" id='about_con'>
-            <div class="row">
-                <div class='col col-6' id="about_fi">
-                    <img src="/static/img/{{item.picture}}" class='about_img'>
-                    <div class="about_sc">
-                        <div class="about_sc1">
-                            <p>Жанр</p>
-                            <p>Разработчик</p>
-                            <p>Издатель</p>
-                            <p>Дата выхода</p>
-                        </div>
-                        <div class="about_sc2">
-                            {% for i in item.categories %}
-                                <p>{{i.name}}</p>
-                            {% endfor %}
-                            <p>{{item.developer}}</p>
-                            <p>{{item.publisher}}</p>
-                            <p>{{item.date}}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class='col col-6' id='about_th'>
-                    <h2 class='about_h2'>Купить {{item.title}}</h2>
-                    <ul class='about_qu'>
-                        <li>       
-                            {% if item.quantity > 0 %} 
-                                В наличии
-                            {% else %}
-                                Нет в наличии
-                            {% endif %}
-                        </li>
-                    </ul>
-                    <div class="about_de">
-                        {{item.description}}
-                    </div>
-                    <div class="about_buy">
-                        <div class="about_btn">
-                            {% if current_user.is_authenticated and current_user.role == 'user' and not check and item.quantity > 0 %}
-                                <div>
-                                    <a href="/add_to_cart/{{ item.id }}" class="btn btn-warning">
-                                        В корзину
-                                    </a>
-                                </div>
-                            {% elif current_user.is_authenticated and current_user.role == 'user' and check %}
-                                <div>
-                                    <a href="/cart" class="btn btn-warning">
-                                        К корзине
-                                    </a>
-                                </div>
-                            {% elif current_user.is_authenticated and current_user.role == 'admin' %}
-                            <div>
-                                <a href="/games_edit/{{ item.id }}" class="btn btn-warning">
-                                    Изменить
-                                </a>
-                                <a href="/games_delete/{{ item.id }}" class="btn btn-danger">
-                                    Удалить
-                                </a>
+
+        <h1>Результаты поиска игр по запросу "{{request}}"</h1>
+        {% if not empty %}
+            <div class='container'>
+            {% for i in games %}
+                <div class='row' id='row'>
+                {% for item in i %}
+                    <div class='col col-xl-3 col-md-6'>
+                        <div class='game_block'>
+                            <a href="/games_info/{{ item.id }}">
+                                <img src="/static/img/{{item.picture}}" class='game_image'>
+                            </a>
+                            <div class='game_title'>
+                                {{item.title}}
                             </div>
-                            {% else %}
-                                <div>
-                                    <a href="#" class="btn btn-secondary btn-lg disabled" tabindex="-1" role="button" aria-disabled="true">
-                                    Нельзя купить
-                                    </a>
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div class="about_pr">
-                            {{item.price}}₽
+                            <div class='game_price'>
+                                {{item.price}}₽
+                            </div>
                         </div>
                     </div>
+                {% endfor %}
                 </div>
+            {% endfor %}
             </div>
-        </div>
-    </div>
+        {% else %}
+        <p style="color:white;">По вашему запросу ничего не найдено</p>
+        {% endif %}
+
     <footer class='container' id='footer'>
         <br>
         <div class="row">

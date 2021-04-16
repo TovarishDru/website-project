@@ -17,7 +17,7 @@
                         <br>
                         {% for i in genres %}
                             <li class='sub_menu_link'>
-                                <a href='/search/{{ i.name }}'>{{i.name}}</a>
+                                <a href='/search/category={{ i.name }}'>{{i.name}}</a>
                             </li>
                         {% endfor %}
                     </ul>
