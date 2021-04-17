@@ -9,6 +9,7 @@ from resources import user_resource, product_resource
 from resources.product_search import product_search
 from flask_restful import reqparse, abort, Api, Resource
 from requests import get, post, delete, put
+import datetime
 
 
 db_session.global_init("db/shop.db")
@@ -93,7 +94,7 @@ def main():
     if request.method == 'POST':
         return redirect(f"/search/request={request.form['search'].lower()}")
     return render_template("index.html", games=res, empty=empty, genres=db_sess.query(Category).all(),
-                            empty2=empty2, news=res2)
+                            empty2=empty2, news=res2, year=datetime.date.today().year)
 
 
 @app.route('/search/request=<search_request>', methods=['GET', 'POST'])
@@ -114,7 +115,8 @@ def search_games(search_request):
             pr = []
     if len(pr) != 0:
         res.append(pr)
-    return render_template('search_games.html', games=res, request=search_request, empty=not bool(res), genres=db_sess.query(Category).all())
+    return render_template('search_games.html', games=res, request=search_request, empty=not bool(res), genres=db_sess.query(Category).all(),
+                            year=datetime.date.today().year)
 
 
 @app.route('/search/category=<criteria>', methods=['GET', 'POST'])
@@ -139,7 +141,8 @@ def search_category(criteria):
     print(res)
     if request.method == 'POST':
         return redirect(f"/search/request={request.form['search'].lower()}")
-    return render_template('search_category.html', games=res, empty=not bool(games), category=criteria, genres=db_sess.query(Category).all())
+    return render_template('search_category.html', games=res, empty=not bool(games), category=criteria, genres=db_sess.query(Category).all(),
+                            year=datetime.date.today().year)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -271,7 +274,7 @@ def games_info(id):
                 check = True
     if request.method == 'POST':
         return redirect(f"/search/request={request.form['search'].lower()}")
-    return render_template('games_info.html', item=games, check=check, genres=db_sess.query(Category).all())
+    return render_template('games_info.html', item=games, check=check, genres=db_sess.query(Category).all(), year=datetime.date.today().year)
 
 
 @app.route('/add_to_cart/<int:id>')
@@ -328,7 +331,7 @@ def news_info(id):
         abort(404)
     if request.method == 'POST':
         return redirect(f"/search/request={request.form['search'].lower()}")
-    return render_template('news_info.html', item=news, genres=db_sess.query(Category).all())
+    return render_template('news_info.html', item=news, genres=db_sess.query(Category).all(), year=datetime.date.today().year)
 
 
 @app.route('/news', methods=['GET', 'POST'])
