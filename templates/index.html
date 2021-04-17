@@ -1,9 +1,8 @@
 {% extends "main.html" %}
 
 {% block content %}
-<div class='wraper'>
-    <div class='cont'>
-        <header class='menu'>
+<div class='wrapper'>
+        <header class='container-fluid' id='menu'>
             <div class='row'>
             <ul class='menu_list'>
                 <li class='col' id='header_col'>
@@ -57,6 +56,7 @@
             </ul>
             </div>
         </header>
+        <div class='cont'>
         <div class="container">
             <div class='row'>
                 <div class='col col-xl-3 col-md-6' id='rel_adv'>
@@ -129,28 +129,24 @@
         {% else %}
             Пока нет игр
         {% endif %}
-        <h1 align='center' style="margin-top: 60px;">Новости</h1>
+        <h1 class='news_logo'>Новости</h1>
         {% if not empty2 %}
             <div class='container'>
             {% for i in news %}
-                <div class='row' style="margin-top: 30px; margin-bottom: 10px;">
+                <div class='row'>
                 {% for item in i %}
-                    <div class='col col-md-6'>
-                        <img src="/static/img/{{item.picture}}" class='game_image'>
-                        <h4 align="center">
+                    <div class='col col-md-6' id='news_block'>
+                        <a href="/news_info/{{ item.id }}">
+                            <img src="/static/img/{{item.picture}}" class='news_image'>
+                        </a>
+                        <div>
+                            {{item.published_date.strftime('%d.%m.%Y')}}
+                        </div>
+                        <h4>
                             {{item.title}}
                         </h4>
-                        <div>
-                            Опубликовано {{item.published_date.strftime('%d.%m.%Y')}}
-                        </div>
-                        <div></div>
                         <div class="text-truncate d-block">
-                            {{item.content[:80]}}
-                        </div>
-                        <div align="center">
-                            <a href="/news_info/{{ item.id }}" class="btn btn-warning">
-                                Читать дальше
-                            </a>
+                            {{item.content[:77]}}...
                         </div>
                     </div>
                 {% endfor %}

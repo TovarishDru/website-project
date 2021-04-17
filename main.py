@@ -10,6 +10,7 @@ from resources.product_search import product_search
 from flask_restful import reqparse, abort, Api, Resource
 from requests import get, post, delete, put
 
+
 db_session.global_init("db/shop.db")
 app = Flask(__name__)
 api = Api(app)
@@ -59,7 +60,6 @@ def load_user(user_id):
 @app.route('/', methods=['GET', 'POST'])
 def main():
     db_sess = db_session.create_session()
-    message = ''
     games = db_sess.query(Product).all()
     empty = True
     if len(games) > 0:
@@ -93,7 +93,7 @@ def main():
     if request.method == 'POST':
         return redirect(f"/search/request={request.form['search'].lower()}")
     return render_template("index.html", games=res, empty=empty, genres=db_sess.query(Category).all(),
-                           message=message, empty2=empty2, news=res2)
+                            empty2=empty2, news=res2)
 
 
 @app.route('/search/request=<search_request>', methods=['GET', 'POST'])
@@ -114,7 +114,7 @@ def search_games(search_request):
             pr = []
     if len(pr) != 0:
         res.append(pr)
-    return render_template('search_games.html', games=res, request=search_request, empty=not bool(res))
+    return render_template('search_games.html', games=res, request=search_request, empty=not bool(res), genres=db_sess.query(Category).all())
 
 
 @app.route('/search/category=<criteria>', methods=['GET', 'POST'])
@@ -137,7 +137,9 @@ def search_category(criteria):
     if len(pr) != 0:
         res.append(pr)
     print(res)
-    return render_template('search_category.html', games=res, empty=not bool(games), category=criteria)
+    if request.method == 'POST':
+        return redirect(f"/search/request={request.form['search'].lower()}")
+    return render_template('search_category.html', games=res, empty=not bool(games), category=criteria, genres=db_sess.query(Category).all())
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -256,7 +258,7 @@ def games_delete(id):
         abort(404)
 
 
-@app.route('/games_info/<int:id>')
+@app.route('/games_info/<int:id>', methods=['GET', 'POST'])
 def games_info(id):
     db_sess = db_session.create_session()
     games = db_sess.query(Product).filter(Product.id == id).first()
@@ -267,7 +269,9 @@ def games_info(id):
         for i in current_user.cart:
             if i.id == id:
                 check = True
-    return render_template('games_info.html', item=games, check=check)
+    if request.method == 'POST':
+        return redirect(f"/search/request={request.form['search'].lower()}")
+    return render_template('games_info.html', item=games, check=check, genres=db_sess.query(Category).all())
 
 
 @app.route('/add_to_cart/<int:id>')
@@ -316,13 +320,15 @@ def order():
     return redirect('/')
 
 
-@app.route('/news_info/<int:id>')
+@app.route('/news_info/<int:id>', methods=['GET', 'POST'])
 def news_info(id):
     db_sess = db_session.create_session()
     news = db_sess.query(News).filter(News.id == id).first()
     if not news:
         abort(404)
-    return render_template('news_info.html', item=news)
+    if request.method == 'POST':
+        return redirect(f"/search/request={request.form['search'].lower()}")
+    return render_template('news_info.html', item=news, genres=db_sess.query(Category).all())
 
 
 @app.route('/news', methods=['GET', 'POST'])

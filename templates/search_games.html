@@ -1,9 +1,8 @@
 {% extends "main.html" %}
 
 {% block content %}
-<div class='wraper'>
-    <div class='cont'>
-        <header class='menu'>
+<div class='wrapper'>
+        <header class='container-fluid' id='menu'>
             <div class='row'>
             <ul class='menu_list'>
                 <li class='col' id='header_col'>
@@ -17,7 +16,7 @@
                         <br>
                         {% for i in genres %}
                             <li class='sub_menu_link'>
-                                <a href='/search/{{ i.name }}'>{{i.name}}</a>
+                                <a href='/search/category={{ i.name }}'>{{i.name}}</a>
                             </li>
                         {% endfor %}
                     </ul>
@@ -57,7 +56,7 @@
             </ul>
             </div>
         </header>
-
+        <div class='cont'>
         <h1>Результаты поиска игр по запросу "{{request}}"</h1>
         {% if not empty %}
             <div class='container'>
@@ -82,9 +81,9 @@
             {% endfor %}
             </div>
         {% else %}
-        <p style="color:white;">По вашему запросу ничего не найдено</p>
+        <p class='search_nothing'>По вашему запросу ничего не найдено</p>
         {% endif %}
-
+    </div>
     <footer class='container' id='footer'>
         <br>
         <div class="row">
