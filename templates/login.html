@@ -1,29 +1,40 @@
 {% extends "main.html" %}
 
 {% block content %}
-    <h1>Авторизация</h1>
-    <form action="" method="post">
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.email.label }}<br>
-            {{ form.email(class="form-control", type="email") }}<br>
+    <h1 class='login_h1'>Авторизация</h1>
+    <div class='container-fluid'>
+    <div class="row">
+    <div class='col'></div>
+    <form action="" method="post" id='login_cont' class='col col-2'>
+            {{ form.hidden_tag() }}
+        <div>
+            <div class='login_em_la'>
+                {{ form.email.label }}
+            </div>
+            {{ form.email(type="email", id='form-standart') }}
+            <br>
             {% for error in form.email.errors %}
                 <div class="alert alert-danger" role="alert">
                     {{ error }}
                 </div>
             {% endfor %}
-        </p>
-        <p>
-            {{ form.password.label }}<br>
-            {{ form.password(class="form-control", type="password") }}<br>
+        </div>
+        <div>
+            <div class='login_em_la'>
+                {{ form.password.label }}
+            </div>
+            {{ form.password(type="password", id='form-standart') }}
+            <br>
             {% for error in form.password.errors %}
                 <div class="alert alert-danger" role="alert">
                     {{ error }}
                 </div>
             {% endfor %}
-        </p>
-        <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
-        <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+        </div>
+        <div>{{ form.submit(type="submit", class="btn btn-primary", id='login_btn') }}</div>
         <div>{{ message }}</div>
     </form>
+    <div class='col'></div>
+    </div>
+    </div>
 {% endblock %}

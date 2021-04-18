@@ -1,12 +1,17 @@
 {% extends "main.html" %}
 
 {% block content %}
-<h1>{{title}}</h1>
-<form action="" method="post" enctype="multipart/form-data" style="color:white;">
+<h1 class='login_h1'>{{title}}</h1>
+<div class='container-fluid'>
+<div class='row'>
+<div class='col'></div>
+<form action="" method="post" enctype="multipart/form-data" id='login_cont' class='col col-3'>
     {{ form.hidden_tag() }}
     <p>
-        {{ form.title.label }}<br>
-        {{ form.title(class="form-control") }}<br>
+        <div class='login_em_la'>
+            {{ form.title.label }}
+        </div>
+        {{ form.title(id='form-standart') }}<br>
         {% for error in form.title.errors %}
             <p class="alert alert-danger" role="alert">
                 {{ error }}
@@ -14,8 +19,10 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.description.label }}<br>
-        {{ form.description(class="form-control") }}<br>
+        <div class='login_em_la'>
+            {{ form.description.label }}
+        </div>
+        {{ form.description(id='form-standart') }}<br>
         {% for error in form.description.errors %}
             <p content="alert alert-danger" role="alert">
                 {{ error }}
@@ -23,8 +30,10 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.picture.label }}<br>
-        {{ form.picture(class="form-control") }}<br>
+        <div class='login_em_la'>
+            {{ form.picture.label }}
+        </div>
+        {{ form.picture(id='form-standart') }}<br>
         {% for error in form.picture.errors %}
             <p content="alert alert-danger" role="alert">
                 {{ error }}
@@ -32,8 +41,10 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.developer.label }}<br>
-        {{ form.developer(class="form-control") }}<br>
+        <div class='login_em_la'>
+            {{ form.developer.label }}
+        </div>
+        {{ form.developer(id='form-standart') }}<br>
         {% for error in form.developer.errors %}
             <p content="alert alert-danger" role="alert">
                 {{ error }}
@@ -41,8 +52,10 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.publisher.label }}<br>
-        {{ form.publisher(class="form-control") }}<br>
+        <div class='login_em_la'>
+            {{ form.publisher.label }}
+        </div>
+        {{ form.publisher(id='form-standart') }}<br>
         {% for error in form.publisher.errors %}
             <p content="alert alert-danger" role="alert">
                 {{ error }}
@@ -50,8 +63,10 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.genres.label }}<br>
-        {{ form.genres }}<br>
+        <div class='login_em_la'>
+            {{ form.genres.label }}
+        </div>
+        {{ form.genres(id='form_genres') }}<br>
         {% for error in form.genres.errors %}
             <p content="alert alert-danger" role="alert">
                 {{ error }}
@@ -59,8 +74,10 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.date.label }}<br>
-        {{ form.date(class="form-control") }}<br>
+        <div class='login_em_la'>
+            {{ form.date.label }}
+        </div>
+        {{ form.date(id='form-standart') }}<br>
         {% for error in form.date.errors %}
             <p content="alert alert-danger" role="alert">
                 {{ error }}
@@ -68,8 +85,10 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.price.label }}<br>
-        {{ form.price(class="form-control") }}<br>
+        <div class='login_em_la'>
+            {{ form.price.label }}
+        </div>
+        {{ form.price(id='form-standart') }}<br>
         {% for error in form.price.errors %}
             <p content="alert alert-danger" role="alert">
                 {{ error }}
@@ -77,8 +96,10 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.quantity.label }}<br>
-        {{ form.quantity(class="form-control") }}<br>
+        <div class='login_em_la'>
+            {{ form.quantity.label }}
+        </div>
+        {{ form.quantity(id='form-standart') }}<br>
         {% for error in form.quantity.errors %}
             <p content="alert alert-danger" role="alert">
                 {{ error }}
@@ -88,4 +109,7 @@
     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
     {{message}}
 </form>
+<div class='col'></div>
+</div>
+</div>
 {% endblock %}

@@ -1,4 +1,6 @@
 {% extends "main.html" %}
+
+
 {% block content %}
 <div class='wrapper'>
     <header class='container-fluid' id='menu'>
@@ -55,45 +57,56 @@
         </ul>
         </div>
     </header>
-    <h1>Корзина</h1>
-{% for item in cart %}
-<div class="col-md6 border rounded">
-    <h2>{{item.title}}</h2>
-    <div>
-        {{item.description}}
+    <div class='cont'>
+        <h1 class='login_h1'>Корзина</h1>
+        {% if not empty %}
+            <div class='container'>
+            {% for i in cart %}  
+                <div class='row' id='row'>
+                {% for item in i %}
+                    <div class='col col-xl-3 col-md-6'>
+                        <div class='game_block'>
+                            <a href="/games_info/{{ item.id }}">
+                                <img src="/static/img/{{item.picture}}" class='game_image'>
+                            </a>
+                            <div class='game_title'>
+                                {{item.title}}
+                            </div>
+                            <div class='game_price'>
+                                {{item.price}}₽
+                            </div>
+                            {% if current_user.is_authenticated and current_user.role == 'user' %}
+                                <div>
+                                    <a href="/cart_delete/{{ item.id }}" class="btn btn-warning" id='cart_btn'>
+                                        Удалить
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div> 
+                {% endfor %}
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+        {% if current_user.is_authenticated and current_user.role == 'user' and not empty %}
+        <div class="container">
+            <div class='row'>
+                <div class='col col-5'></div>
+                <div class='col col-2'>
+                    <a href="/order" class="btn btn-warning" id='btn_standart'>
+                        Оформить заказ
+                    </a>
+                </div>
+                <div class='col col-5'></div>
+            </div>
+        </div>
+        {% elif current_user.is_authenticated and current_user.role == 'user' and empty %}
+            <div class='login_p'>
+                Корзина пуста
+            </div>
+        {% endif %}
     </div>
-    <img src="/static/img/{{item.picture}}" width="300px" height="200px">
-    <div>
-        Разработчик: - {{item.developer}}, Издатель - {{item.publisher}}, Дата выхода - {{item.date}}
-    </div>
-    <div>
-        Цена - {{item.price}}руб.
-    </div>
-    <div>
-        Категории:
-        {% for i in item.categories %}
-            {{i.name}}
-        {% endfor %}
-    </div>
-    {% if current_user.is_authenticated and current_user.role == 'user' %}
-    <div>
-        <a href="/cart_delete/{{ item.id }}" class="btn btn-warning">
-            Удалить
-        </a>
-    </div>
-    {% endif %}
-</div>
-{% endfor %}
-{% if current_user.is_authenticated and current_user.role == 'user' and not empty %}
-<div>
-    <a href="/order" class="btn btn-secondary">
-        Оформить заказ
-    </a>
-</div>
-{% elif current_user.is_authenticated and current_user.role == 'user' and empty %}
-    Корзина пуста
-{% endif %}
-
     <footer class='container' id='footer'>
         <br>
         <div class="row">

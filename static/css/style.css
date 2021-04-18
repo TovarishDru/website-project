@@ -85,6 +85,7 @@ li {
     width: 100%;
     color: transparent;
     text-shadow: 0 0 0 white;
+    cursor: auto;
 }
 .game_block {
     position: relative;
@@ -312,4 +313,50 @@ li {
 .search_nothing {
     color: white;
     text-align: center;
+}
+.login_em_la {
+    color: white;
+}
+.login_h1 {
+    color: rgb(255, 165, 0);
+}
+.login_form {
+    position: relative;
+    left: 50%;
+    top: 50%;
+}
+#form-standart {
+    border: none;
+    outline: none;
+    font-size: 16px;
+    background-color: rgb(128, 128, 128); 
+    color: transparent;
+    text-shadow: 0 0 0 white;
+    margin: 20px;
+    width: 90%;
+    border-radius: 10px;
+}
+#form-standart:hover {
+    opacity: 0.7;
+}
+#login_cont {
+    text-align: center;
+    margin: 60px;
+    border: 1px solid rgb(255, 165, 0);
+    border-radius: 20px;
+}
+#login_btn {
+    margin: 10px;
+}
+#btn_standart {
+    margin: 20px;
+}
+.login_p {
+    color: white;
+    text-align: center;
+    margin: 40px;
+}
+#form_genres {
+    text-align: left;
+    color: rgb(255, 165, 0);
 }

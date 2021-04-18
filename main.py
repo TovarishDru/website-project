@@ -11,6 +11,7 @@ from flask_restful import reqparse, abort, Api, Resource
 from requests import get, post, delete, put
 import datetime
 
+
 db_session.global_init("db/shop.db")
 app = Flask(__name__)
 api = Api(app)
@@ -306,8 +307,17 @@ def cart():
     if len(current_user.cart) > 0:
         empty = False
     games = current_user.cart
-    for game in games:
-        a = game.categories
+    if not empty:
+        pr = []
+        res = []
+        for i in games:
+            pr.append(i)
+            if len(pr) == 4:
+                res.append(pr)
+                pr = []
+        if len(pr) != 0:
+            res.append(pr)
+        games = res
     if request.method == 'POST':
         return redirect(f"/search/request={request.form['search'].lower()}")
     return render_template('cart.html', empty=empty, cart=games, genres=db_sess.query(Category).all(),
