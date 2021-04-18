@@ -1,0 +1,56 @@
+{% extends "main.html" %}
+
+{% block content %}
+<h1>Оформление заказа</h1>
+<form action="" method="post" enctype="multipart/form-data" style="color:white;">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.number.label }}<br>
+        {{ form.number(class="form-control") }}<br>
+        {% for error in form.number.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.name.label }}<br>
+        {{ form.name(class="form-control") }}<br>
+        {% for error in form.name.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.surname.label }}<br>
+        {{ form.surname(class="form-control") }}<br>
+        {% for error in form.surname.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+
+    <p>
+        {{ form.date.label }}<br>
+        {{ form.date(class="form-control") }}<br>
+        {% for error in form.date.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.code.label }}<br>
+        {{ form.code(class="form-control") }}<br>
+        {% for error in form.code.errors %}
+            <p content="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    {{message}}
+</form>
+{% endblock %}

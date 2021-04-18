@@ -69,9 +69,13 @@
                             <p>Дата выхода</p>
                         </div>
                         <div class="about_sc2">
-                            {% for i in item.categories %}
-                                <p>{{i.name}}</p>
-                            {% endfor %}
+                            {% if item.categories %}
+                            <p>{% for i in item.categories %}
+                                {{i.name}}
+                            {% endfor %}</p>
+                            {% else %}
+                            <p>-</p>
+                            {% endif %}
                             <p>{{item.developer}}</p>
                             <p>{{item.publisher}}</p>
                             <p>{{item.date}}</p>

@@ -58,7 +58,7 @@ class ProductResource(Resource):
             product.categories.remove(i)
         if args['genres']:
             for i in args['genres'].split(','):
-                cat = session.query(Category).filter(Category.name == i).first()
+                cat = session.query(Category).filter(Category.id == i).first()
                 if cat is not None:
                     product.categories.append(cat)
         session.commit()
@@ -89,7 +89,7 @@ class ProductListResource(Resource):
         )
         if args['genres']:
             for i in args['genres'].split(','):
-                cat = session.query(Category).filter(Category.name == i).first()
+                cat = session.query(Category).filter(Category.id == i).first()
                 if cat is not None:
                     product.categories.append(cat)
         session.add(product)

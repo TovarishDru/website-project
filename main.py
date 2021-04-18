@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, request, abort
 from data import db_session
 from data.__all_models import User, Product, Category, News
-from forms.__all_forms import RegisterForm, LoginForm, GamesForm, NewsForm
+from forms.__all_forms import RegisterForm, LoginForm, GamesForm, NewsForm, OrderForm
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 import shutil
 import os
@@ -10,7 +10,6 @@ from resources.product_search import product_search
 from flask_restful import reqparse, abort, Api, Resource
 from requests import get, post, delete, put
 import datetime
-
 
 db_session.global_init("db/shop.db")
 app = Flask(__name__)
@@ -94,7 +93,7 @@ def main():
     if request.method == 'POST':
         return redirect(f"/search/request={request.form['search'].lower()}")
     return render_template("index.html", games=res, empty=empty, genres=db_sess.query(Category).all(),
-                            empty2=empty2, news=res2, year=datetime.date.today().year)
+                           empty2=empty2, news=res2, year=datetime.date.today().year)
 
 
 @app.route('/search/request=<search_request>', methods=['GET', 'POST'])
@@ -115,8 +114,9 @@ def search_games(search_request):
             pr = []
     if len(pr) != 0:
         res.append(pr)
-    return render_template('search_games.html', games=res, request=search_request, empty=not bool(res), genres=db_sess.query(Category).all(),
-                            year=datetime.date.today().year)
+    return render_template('search_games.html', games=res, request=search_request, empty=not bool(res),
+                           genres=db_sess.query(Category).all(),
+                           year=datetime.date.today().year)
 
 
 @app.route('/search/category=<criteria>', methods=['GET', 'POST'])
@@ -141,8 +141,9 @@ def search_category(criteria):
     print(res)
     if request.method == 'POST':
         return redirect(f"/search/request={request.form['search'].lower()}")
-    return render_template('search_category.html', games=res, empty=not bool(games), category=criteria, genres=db_sess.query(Category).all(),
-                            year=datetime.date.today().year)
+    return render_template('search_category.html', games=res, empty=not bool(games), category=criteria,
+                           genres=db_sess.query(Category).all(),
+                           year=datetime.date.today().year)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -191,13 +192,16 @@ def logout():
 @login_required
 def add_games():
     form = GamesForm()
+    db_sess = db_session.create_session()
+    genres = db_sess.query(Category).all()
+    form.genres.choices = [(genre.id, genre.name) for genre in genres]
     if form.validate_on_submit():
         filename = generate_img_name('products', form.picture.data.filename)
         res = post('http://127.0.0.1:8080/api/product',
                    json={'title': form.title.data, 'description': form.description.data,
                          'picture': filename,
                          'developer': form.developer.data, 'publisher': form.publisher.data, 'date': form.date.data,
-                         'price': form.price.data, 'quantity': form.quantity.data, 'genres': form.genres.data
+                         'price': form.price.data, 'quantity': form.quantity.data, 'genres': ','.join(form.genres.data)
                          })
         out = open(f'{filename}', "wb")
         out.write(form.picture.data.read())
@@ -211,9 +215,11 @@ def add_games():
 @login_required
 def edit_games(id):
     form = GamesForm()
+    db_sess = db_session.create_session()
+    genres = db_sess.query(Category).all()
+    form.genres.choices = [(genre.id, genre.name) for genre in genres]
     if request.method == "GET":
         res = get(f'http://127.0.0.1:8080/api/product/{id}')
-        print(res)
         if res:
             res = res.json()['product']
             form.title.data = res['title']
@@ -221,7 +227,7 @@ def edit_games(id):
             form.picture.data = res['picture']
             form.developer.data = res['developer']
             form.publisher.data = res['publisher']
-            form.genres.data = res['genres']
+            # form.genres.data = res['genres']
             form.date.data = res['date']
             form.price.data = res['price']
             form.quantity.data = res['quantity']
@@ -233,12 +239,13 @@ def edit_games(id):
             os.remove(f"static/img/{res['picture']}")
         except Exception:
             pass
+
         filename = generate_img_name('products', form.picture.data.filename)
         res = put(f'http://127.0.0.1:8080/api/product/{id}',
                   json={'title': form.title.data, 'description': form.description.data,
                         'picture': filename,
                         'developer': form.developer.data, 'publisher': form.publisher.data, 'date': form.date.data,
-                        'price': form.price.data, 'quantity': form.quantity.data, 'genres': form.genres.data
+                        'price': form.price.data, 'quantity': form.quantity.data, 'genres': ','.join(form.genres.data)
                         })
         if res:
             out = open(f'{filename}', "wb")
@@ -274,7 +281,8 @@ def games_info(id):
                 check = True
     if request.method == 'POST':
         return redirect(f"/search/request={request.form['search'].lower()}")
-    return render_template('games_info.html', item=games, check=check, genres=db_sess.query(Category).all(), year=datetime.date.today().year)
+    return render_template('games_info.html', item=games, check=check, genres=db_sess.query(Category).all(),
+                           year=datetime.date.today().year)
 
 
 @app.route('/add_to_cart/<int:id>')
@@ -291,12 +299,19 @@ def add_to_cart(id):
     return redirect(f'/games_info/{id}')
 
 
-@app.route('/cart')
+@app.route('/cart', methods=['GET', 'POST'])
+@login_required
 def cart():
     empty = True
     if len(current_user.cart) > 0:
         empty = False
-    return render_template('cart.html', empty=empty)
+    games = current_user.cart
+    for game in games:
+        a = game.categories
+    if request.method == 'POST':
+        return redirect(f"/search/request={request.form['search'].lower()}")
+    return render_template('cart.html', empty=empty, cart=games, genres=db_sess.query(Category).all(),
+                           year=datetime.date.today().year)
 
 
 @app.route('/cart_delete/<int:id>')
@@ -313,14 +328,24 @@ def cart_delete(id):
     return redirect('/cart')
 
 
-@app.route('/order')
+@app.route('/order', methods=['GET', 'POST'])
 def order():
-    db_sess = db_session.create_session()
-    user = db_sess.query(User).filter(User.id == current_user.id).first()
-    for i in user.cart:
-        user.cart.remove(i)
+    form = OrderForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.id == current_user.id).first()
+        user.cart.clear()
         db_sess.commit()
-    return redirect('/')
+        return redirect('/after_order')
+
+    return render_template('order.html', form=form)
+
+
+@app.route('/after_order', methods=['GET', 'POST'])
+def after_order():
+    if request.method == 'POST':
+        return redirect(f"/search/request={request.form['search'].lower()}")
+    return render_template('after_order.html', genres=db_sess.query(Category).all(), year=datetime.date.today().year)
 
 
 @app.route('/news_info/<int:id>', methods=['GET', 'POST'])
@@ -331,7 +356,8 @@ def news_info(id):
         abort(404)
     if request.method == 'POST':
         return redirect(f"/search/request={request.form['search'].lower()}")
-    return render_template('news_info.html', item=news, genres=db_sess.query(Category).all(), year=datetime.date.today().year)
+    return render_template('news_info.html', item=news, genres=db_sess.query(Category).all(),
+                           year=datetime.date.today().year)
 
 
 @app.route('/news', methods=['GET', 'POST'])
