@@ -41,12 +41,10 @@ li {
     display: none;
     padding: 5px 0px 0px 0px;
     background: linear-gradient(0deg,
-                                rgba(19,15,15,0) 0%,
-                                rgba(19,15,15,.05) 9.38%,
-                                rgba(19,16,16,.15) 20.83%,
-                                rgba(20,17,17,.49) 46.35%,
-                                rgba(20,17,17,.7) 75%,
-                                rgba(20,17,17,.95) 100%);
+                                rgba(19,15,15,.95) 0%,
+                                rgba(19,15,15,.8) 60%,
+                                rgba(20,17,17,.0) 100%);
+    border-radius: 20px;
 }
 .menu_list>li:active .sub_menu_list{
     display: block;
