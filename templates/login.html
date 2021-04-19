@@ -14,7 +14,7 @@
             {{ form.email(type="email", id='form-standart') }}
             <br>
             {% for error in form.email.errors %}
-                <div class="alert alert-danger" role="alert">
+                <div id='error_message' role="alert">
                     {{ error }}
                 </div>
             {% endfor %}
@@ -26,13 +26,15 @@
             {{ form.password(type="password", id='form-standart') }}
             <br>
             {% for error in form.password.errors %}
-                <div class="alert alert-danger" role="alert">
+                <div id='error_message' role="alert">
                     {{ error }}
                 </div>
             {% endfor %}
         </div>
         <div>{{ form.submit(type="submit", class="btn btn-primary", id='login_btn') }}</div>
-        <div>{{ message }}</div>
+        <div id='error_message'>
+            {{ message }}
+        </div>
     </form>
     <div class='col'></div>
     </div>

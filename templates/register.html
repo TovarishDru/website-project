@@ -13,7 +13,7 @@
         </div>
         {{ form.email(id="form-standart", type="email") }}<br>
         {% for error in form.email.errors %}
-            <p class="alert alert-danger" role="alert">
+            <p id="error_message" role="alert">
                 {{ error }}
             </p>
         {% endfor %}
@@ -24,7 +24,7 @@
         </div>
         {{ form.password(id="form-standart", type="password") }}<br>
         {% for error in form.password.errors %}
-            <p class="alert alert-danger" role="alert">
+            <p id="error_message" role="alert">
                 {{ error }}
             </p>
         {% endfor %}
@@ -35,7 +35,7 @@
         </div>
         {{ form.password_again(id="form-standart", type="password") }}<br>
         {% for error in form.password_again.errors %}
-            <p class="alert alert-danger" role="alert">
+            <p id="error_message" role="alert">
                 {{ error }}
             </p>
         {% endfor %}
@@ -46,13 +46,15 @@
         </div>
         {{ form.name(id="form-standart") }}<br>
         {% for error in form.name.errors %}
-            <p class="alert alert-danger" role="alert">
+            <p id="error_message" role="alert">
                 {{ error }}
             </p>
         {% endfor %}
     </p>
     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-    {{message}}
+    <p id="error_message">
+        {{message}}
+    </p>
 </form>
 <div class='col'></div>
 </div>

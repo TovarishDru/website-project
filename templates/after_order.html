@@ -66,10 +66,16 @@
         </div>
     </header>
     <div class='cont'>
-        <p style="color:white;">Спасибо за покупку! Ключи доступа отправлены вам на электронную почту {{current_user.email}} </p>
-        <a href="/" class="btn btn-secondary">
-            Вернуться на главную
-        </a>
+        <h1 class="login_h1">Спасибо за покупку!</h1>
+        <div class='aft_order_cont'>
+            <p>Ключи доступа отправлены вам на электронную почту</p>
+            <p class='login_h1'>{{current_user.email}}</p>
+        </div>
+        <div id='order_btn'>
+            <a href="/" class="btn btn-warning">
+                Вернуться на главную
+            </a>
+        </div>
     </div>
     <footer class='container' id='footer'>
         <br>
