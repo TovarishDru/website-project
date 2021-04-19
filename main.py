@@ -467,7 +467,7 @@ def news_list():
                 pr = []
         if len(pr) != 0:
             res.append(pr)
-    return render_template('news_list.html', news=res)
+    return render_template('news_list.html', news=res, year=datetime.date.today().year)
 
 
 @app.route('/news_info_admin/<int:id>')

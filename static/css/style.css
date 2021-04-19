@@ -39,7 +39,7 @@ li {
     left: 0px;
     top: 0px;
     display: none;
-    padding: 0px 0px 0px 0px;
+    padding: 5px 0px 0px 0px;
 }
 .menu_list>li:active .sub_menu_list{
     display: block;
@@ -47,12 +47,21 @@ li {
 .sub_menu_list:hover {
     display: block;
 }
+.sub_menu_link {
+    margin: 5px;
+}
 #menu {
     position: sticky;
-    top: 20px;
+    top: 0px;
     left: 0px;
-    z-index: 5;
+    z-index: 10;
     margin-bottom: 20px;
+    background: linear-gradient(0deg,rgba(19,15,15,0) 0%,
+                                rgba(19,15,15,.05) 9.38%,
+                                rgba(19,16,16,.15) 20.83%,
+                                rgba(20,17,17,.49) 46.35%,
+                                rgba(20,17,17,.7) 75%,
+                                rgba(20,17,17,.95) 100%);
 }
 .nav_ic {
     width: 40px;
@@ -68,6 +77,7 @@ li {
     width: auto;
     opacity: 0.5;
     color: white;
+    vertical-align: middle;
 }
 .search_box:hover {
     opacity: 0.7;
@@ -186,6 +196,8 @@ li {
 }
 #header_col {
     left: 3%;
+    margin-top: 10px;
+    z-index: 10;
 }
 .error_message {
     color: rgb(255, 165, 0)
@@ -319,6 +331,7 @@ li {
 }
 .login_h1 {
     color: rgb(255, 165, 0);
+    text-align: center;
 }
 .login_form {
     position: relative;
@@ -349,7 +362,7 @@ li {
     margin: 10px;
 }
 #btn_standart {
-    margin: 20px;
+    margin: 10px;
 }
 .login_p {
     color: white;
@@ -359,4 +372,28 @@ li {
 #form_genres {
     text-align: left;
     color: rgb(255, 165, 0);
+}
+.btn_news {
+    width: 200px;
+    margin: 0 auto 0 auto;
+}
+#header_href {
+    border-radius: 20px;
+    font-size: 18px;
+    background-color: #ffc107;
+    display: inline-block;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    cursor: pointer;
+    padding: .375rem .75rem;
+    z-index: 10;
+}
+#header_href:hover {
+    border: 1px solid white;
+    background-color: #000;
+    color: #ffc107;
 }

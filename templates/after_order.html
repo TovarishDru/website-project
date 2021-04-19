@@ -9,19 +9,21 @@
                 <a href='/' class="header_icon"><img src='/static/icons/main.png'></a>
             </li>
             <li class='col' id='header_col'>
-                <a href='#' class='genres_choice'>
+                <a href='#' id='header_href'>
                     Жанры
                 </a>
                 <ul class="sub_menu_list">
                     <br>
-                    {% for i in genres %}
-                        <li class='sub_menu_link'>
-                            <a href='/search/category={{ i.name }}'>{{i.name}}</a>
-                        </li>
-                    {% endfor %}
+                    <div class='sub_cont'>
+                        {% for i in genres %}
+                            <li class='sub_menu_link'>
+                                <a href='/search/category={{ i.name }}'>{{i.name}}</a>
+                            </li>
+                        {% endfor %}
+                    </div>
                 </ul>
             </li>
-            <li class='col col-6' id='header_col'>
+            <li class='col col-5' id='header_col'>
                 <form action="" method="post" class='search_box'>
                     <input type='text' name='search' class='search_txt'>
                     <i class="bi bi-search"></i>
@@ -35,6 +37,13 @@
                 <a href='/games'><img src="/static/icons/add.png" class='nav_ic'></a>
                 {% elif current_user.is_authenticated and current_user.role == 'user' %}
                     <a href='/cart'><img src="/static/icons/cart.png" class='nav_ic'></a>
+                {% endif %}
+            </li>
+            <li class='col' id='header_col'>
+                {% if current_user.is_authenticated and current_user.role == 'admin' %}
+                    <a href='/news_list' id='header_href'>Новости</a>
+                {% elif current_user.is_authenticated and current_user.role == 'user' %}
+                    <a href='/news' id='header_href'>Предложить новость</a>
                 {% endif %}
             </li>
             <li class='col' id='header_col'>
@@ -56,10 +65,12 @@
         </ul>
         </div>
     </header>
-    <p style="color:white;">Спасибо за покупку! Ключи доступа отправлены вам на электронную почту {{current_user.email}} </p>
-    <a href="/" class="btn btn-secondary">
-        Вернуться на главную
-    </a>
+    <div class='cont'>
+        <p style="color:white;">Спасибо за покупку! Ключи доступа отправлены вам на электронную почту {{current_user.email}} </p>
+        <a href="/" class="btn btn-secondary">
+            Вернуться на главную
+        </a>
+    </div>
     <footer class='container' id='footer'>
         <br>
         <div class="row">

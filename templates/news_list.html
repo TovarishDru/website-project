@@ -1,37 +1,131 @@
 {% extends "main.html" %}
 
 {% block content %}
-<h1 align='center' style="margin-top: 60px;">Предложенные новости</h1>
-{% if news|length() > 0 %}
-    <div class='container'>
-    {% for i in news %}
-        <div class='row' style="margin-top: 30px; margin-bottom: 10px;">
-
-        {% for item in i %}
-            <div class='col col-md-6'>
-                <img src="/static/img/{{item.picture}}" class='game_image'>
-                <h4 align="center">
-                    {{item.title}}
-                </h4>
-                <div>
-                    Опубликовано {{item.published_date.strftime('%d.%m.%Y')}}
+<div class='wrapper'>
+    <header class='container-fluid' id='menu'>
+        <div class='row'>
+        <ul class='menu_list'>
+            <li class='col' id='header_col'>
+                <a href='/' class="header_icon"><img src='/static/icons/main.png'></a>
+            </li>
+            <li class='col' id='header_col'>
+                <a href='#' id='header_href'>
+                    Жанры
+                </a>
+                <ul class="sub_menu_list">
+                    <br>
+                    <div class='sub_cont'>
+                        {% for i in genres %}
+                            <li class='sub_menu_link'>
+                                <a href='/search/category={{ i.name }}'>{{i.name}}</a>
+                            </li>
+                        {% endfor %}
+                    </div>
+                </ul>
+            </li>
+            <li class='col col-5' id='header_col'>
+                <form action="" method="post" class='search_box'>
+                    <input type='text' name='search' class='search_txt'>
+                    <i class="bi bi-search"></i>
+                </form>
+                <div class="error_message">
+                    {{message}}
                 </div>
-                <div></div>
-                <div class="text-truncate d-block">
-                    {{item.content[:80]}}
-                </div>
-                <div align="center">
-                    <a href="/news_info_admin/{{ item.id }}" class="btn btn-warning">
-                        Читать дальше
-                    </a>
-                </div>
-            </div>
-        {% endfor %}
+            </li>
+            <li class='col' id='header_col'>
+                {% if current_user.is_authenticated and current_user.role == 'admin' %}
+                <a href='/games'><img src="/static/icons/add.png" class='nav_ic'></a>
+                {% elif current_user.is_authenticated and current_user.role == 'user' %}
+                    <a href='/cart'><img src="/static/icons/cart.png" class='nav_ic'></a>
+                {% endif %}
+            </li>
+            <li class='col' id='header_col'>
+                {% if current_user.is_authenticated and current_user.role == 'admin' %}
+                    <a href='/news_list' id='header_href'>Новости</a>
+                {% elif current_user.is_authenticated and current_user.role == 'user' %}
+                    <a href='/news' id='header_href'>Предложить новость</a>
+                {% endif %}
+            </li>
+            <li class='col' id='header_col'>
+                {% if current_user.is_authenticated %}
+                    <a class="navbar-brand" href="/logout">Выйти</a>
+                {% else %}
+                    <a href='#'>Войти</a>
+                    <ul class="sub_menu_list">
+                        <br>
+                        <li>
+                            <a href="/register">Регистрация</a>
+                        </li>
+                        <li>
+                            <a href="/login">Вход</a>
+                        </li>
+                    </ul>
+                {% endif %}
+            </li>
+        </ul>
         </div>
-    {% endfor %}
+    </header>
+    <div class='cont'>
+        <h1>Предложенные новости</h1>
+        {% if news|length() > 0 %}
+            <div class='container'>
+                {% for i in news %}
+                <div class='row'>
+                {% for item in i %}
+                    <div class='col col-md-6' id='news_block'>
+                        <a href="/news_info_admin/{{ item.id }}">
+                            <img src="/static/img/{{item.picture}}" class='news_image'>
+                        </a>
+                        <div>
+                            {{item.published_date.strftime('%d.%m.%Y')}}
+                        </div>
+                        <h4>
+                            {{item.title}}
+                        </h4>
+                        <div class="text-truncate d-block">
+                            {{item.content[:77]}}...
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            {% endfor %}
+            </div>
+        {% else %}
+        <p class='login_h1'>
+            Пока нет предложенных новостей
+        </p>
+        {% endif %}
+        <div class='btn_news'>
+            <a href='/news' class="btn btn-warning">
+                Создать новость
+            </a>
+         </div>
     </div>
-{% else %}
-    Пока нет предложенных новостей
-{% endif %}
-
+    <footer class='container' id='footer'>
+        <br>
+        <div class="row">
+            <div class='col col-3' id='footer_div'>
+                <img src="/static/icons/main.png">
+            </div>
+            <div class='col col-3' id='footer_div'>
+                <a href='#'>Вакансии</a>
+            </div>
+            <div class='col col-3' id='footer_div'>
+                <a href='#'>Поддержка</a>
+            </div>
+            <div class='col col-3' id='footer_div'>
+                <a href='#'>О компании</a>
+            </div>
+        </div>
+        <div>
+            <img src='/static/icons/footericon.png' class="warranty_img">
+            <div class='warranty'>
+                Все продаваемые ключи закупаются у официальных дистрибьюторов и издателей
+            </div>
+        </div>
+        <div class='copyright'>
+            © 2021-{{year}} AllGames
+        </div>
+    </footer>
+</div>
 {% endblock %}
