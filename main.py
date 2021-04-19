@@ -519,12 +519,4 @@ if __name__ == '__main__':
     api.add_resource(product_resource.ProductListResource, '/api/product')
     api.add_resource(product_resource.ProductResource, '/api/product/<int:product_id>')
 
-    """
-    db_sess = db_session.create_session()
-    news = News(title="Новость_1", content="Контент\nКонтент",
-                user_id=1, picture='img_3.jpg', is_published=True)
-    db_sess.add(news)
-    db_sess.commit()
-    """
-
     app.run(port=8080, host='127.0.0.1', debug=True)
