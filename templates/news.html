@@ -13,7 +13,7 @@
         </div>
         {{ form.title(id='form-standart') }}<br>
         {% for error in form.title.errors %}
-            <p class="alert alert-danger" role="alert">
+            <p id="error_message" role="alert">
                 {{ error }}
             </p>
         {% endfor %}
@@ -24,7 +24,7 @@
         </div>
         {{ form.content(id='form-standart') }}<br>
         {% for error in form.content.errors %}
-            <p content="alert alert-danger" role="alert">
+            <p id="error_message" role="alert">
                 {{ error }}
             </p>
         {% endfor %}
@@ -35,13 +35,15 @@
         </div>
         {{ form.picture(id='form-standart') }}<br>
         {% for error in form.picture.errors %}
-            <p content="alert alert-danger" role="alert">
+            <p id="error_message" role="alert">
                 {{ error }}
             </p>
         {% endfor %}
     </p>
     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-    {{message}}
+    <p id="error_message">
+        {{message}}
+    </p>
 </form>
 <div class='col'></div>
 </div>

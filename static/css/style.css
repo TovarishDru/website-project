@@ -37,7 +37,7 @@ li {
 .sub_menu_list {
     position: absolute;
     left: 0px;
-    top: 0px;
+    top: 5px;
     display: none;
     padding: 5px 0px 0px 0px;
 }
@@ -374,7 +374,7 @@ li {
     color: rgb(255, 165, 0);
 }
 .btn_news {
-    width: 200px;
+    width: 150px;
     margin: 0 auto 0 auto;
 }
 #header_href {
@@ -391,9 +391,28 @@ li {
     cursor: pointer;
     padding: .375rem .75rem;
     z-index: 10;
+    border: 1px solid rgb(255, 165, 0);
 }
 #header_href:hover {
     border: 1px solid white;
     background-color: #000;
     color: #ffc107;
+}
+#error_message {
+    color: rgb(255, 165, 0);
+    margin: 5px;
+}
+.aft_order_cont {
+    color: white;
+    display: flex;
+    text-align: center;
+    width: 540px;
+    margin: 0 auto 0 auto;
+}
+.aft_order_cont > p {
+    margin-left: 5px;
+}
+#order_btn {
+    width: 200px;
+    margin: 0 auto 0 auto;
 }
